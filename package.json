@@ -1,6 +1,6 @@
 {
   "name": "nio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The Nio web platform pluggable and extendable CLI",
   "main": "index.js",
   "scripts": {
