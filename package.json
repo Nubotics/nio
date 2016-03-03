@@ -1,0 +1,38 @@
+{
+  "name": "nio",
+  "version": "0.0.1",
+  "description": "Your own personal development assistant in a CLI",
+  "main": "index.js",
+  "bin": {
+    "nio": "nio.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nio",
+    "cli",
+    "vorpal"
+  ],
+  "author": "@Nubuck",
+  "license": "MIT",
+  "dependencies": {
+    "babel-polyfill": "^6.5.0",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-plugin-add-module-exports": "^0.1.2",
+    "babel-register": "^6.5.2",
+    "folder-contents": "^1.1.0",
+    "fs-extra-promise-es6": "^0.1.1",
+    "inquirer-folder-explorer": "^1.0.5",
+    "look-up": "^0.8.3",
+    "micro": "^1.0.4",
+    "nio-tools": "0.0.1",
+    "node-glob-loader": "0.0.15",
+    "node-ssh": "^2.0.7",
+    "pm2": "^1.0.1",
+    "process-env": "^1.1.0",
+    "spawn-shell": "^1.1.2",
+    "vorpal": "^1.9.7"
+  }
+}
