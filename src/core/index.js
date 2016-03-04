@@ -1,6 +1,9 @@
 import tools from '../tools'
 import _ from 'nio-tools'
 import lookup from 'look-up'
+import log from 'npmlog'
+const spawn = require('child_process').spawn
+
 
 let core = {
   async init(app){
@@ -52,7 +55,7 @@ let core = {
       return createdPath
     }
 
-    //:-> load environment vars
+    //:-> load environment lets
 
     env.set('NIO_HOME', nioHomePath)
     app.log('NIO_HOME -> ', nioHomePath)
@@ -233,19 +236,138 @@ let core = {
     },
   },
   shelter: {
-    spawnVagrant(){
+    spawnVagrant(binary, args){
+      let vagrant = spawn(binary, args)
+      log.verbose('vagrant', 'vagrant ' + args.join(' '))
+      let stdout = ''
+      let stderr = ''
+      vagrant.stdout.on('data', function (data) {
+        data = _.trim(data + '')
+        if (data) log.silly('vagrant', '%s', data)
+        stdout += '' + data
+      })
+      vagrant.stderr.on('data', function (data) {
+        data = _.trim(data + '')
+        if (data) log.error('vagrant', '%s', data)
+        stderr += '' + data
+      })
+      vagrant.on('close', function (code) {
+        if (code) log.error('vagrant', 'close code %s', code)
+        vagrant.emit('done', code, stdout, stderr)
+      })
+      return vagrant
     },
-    up(){
+    up(options, machine){
+      let provision = options.provision || false
+      let provider = options.provider || 'virtualbox'
+      let binary = options.binary || 'vagrant'
+      return new Promise(function (resolve, reject) {
+        let vagrant = core.shelter.spawnVagrant(binary, [
+          'up', machine,
+          provider ? '--provider=' + provider : '',
+          !provision ? '--no-provision' : '--provision=' + provision
+        ])
+        let booted = null
+        vagrant.stdout.on('data', function (data) {
+          data += ''
+          if (data.match(/Machine booted and ready!/)) {
+            booted = true
+          }
+          if (data.match(/is already running.$/)) {
+            booted = false
+          }
+        })
+        vagrant.on('done', function (code, stdout, stderr) {
+          if (stderr) {
+            reject(stderr)
+          } else {
+            resolve(booted)
+          }
+        })
+      })
+
     },
-    halt(){
+    halt(options){
+      let binary = options.binary || 'vagrant'
+      return new Promise(function (resolve, reject) {
+        let vagrant = core.shelter.spawnVagrant(binary, ['halt'])
+        vagrant.on('done', function (code, stdout, stderr) {
+          if (stderr) {
+            reject(stderr)
+          } else {
+            resolve(true)
+          }
+        })
+      })
     },
-    status(){
+    status(options){
+      let machines = {}
+      let reg = /([a-z0-9-_]+)\s+(running|poweroff|aborted|not created)\s+[(](virtualbox|libvirt)[)]/i
+      let binary = options.binary || 'vagrant'
+      return new Promise(function (resolve, reject) {
+        let vagrant = core.shelter.spawnVagrant(binary, ['status'])
+        vagrant.stdout.on('data', function (data) {
+          data += ''
+          data.split('\n').forEach(function (line) {
+            let regRes = line.match(reg)
+            if (regRes) {
+              let name = regRes[1]
+              machines[name] = {
+                status: regRes[2],
+                provider: regRes[3]
+              }
+            }
+          })
+        })
+        vagrant.on('done', function (code, stdout, stderr) {
+          if (stderr) {
+            reject(stderr)
+          } else {
+            resolve(machines)
+          }
+        })
+      })
+
     },
-    isRunning(){
+    async isRunning(options){
+      let machines = await core.shelter.status(options)
+      let running = false
+      Object.keys(machines).forEach(function (name) {
+        if (machines[name].status == 'running') {
+          running = name
+        }
+      })
+      return running
     },
-    isInstalled(){
+    version(options){
+      let binary = options.binary || 'vagrant'
+      return new Promise(function (resolve, reject) {
+        let vagrant = spawnVagrant(binary, ['-v'])
+        let version = ''
+        vagrant.stdout.on('data', function (data) {
+          version = (data + '').match(/Vagrant\s+([0-9.]+)/)[1]
+          if (version) version = version[1]
+        })
+        vagrant.on('done', function (code, stdout, stderr) {
+          if (stderr) {
+            reject(stderr)
+          } else {
+            resolve(version)
+          }
+        })
+      })
+
     },
-    version(){
+    async isInstalled(options){
+      let version = null
+      let installed = false
+      try {
+        version = await core.shelter.version(options)
+        installed = version ? true : false
+      } catch (e) {
+        installed = false
+      }
+      return installed
     },
     addBox(){
     },
