@@ -16,12 +16,14 @@ const runShell = async function (command, options = {}) {
 const load = async function (glob) {
 
   let run = function () {
-    return new Promise(function (resolve) {
+    return new Promise(function (resolve, reject) {
       let requires = null
       loader.load(glob, function (exports) {
         requires = exports
       }).then(function () {
         resolve(requires)
+      }, function (e) {
+        reject(e)
       })
     })
   }

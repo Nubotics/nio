@@ -17,6 +17,10 @@ export default function (app, tools) {
       return app.localStorage.getItem('developer') || 'nobody'
     }
 
+    let init = async function(){
+      await app.init()
+    }
+
     ctx
       .command('hello [name]', 'greets nio and sets current developer')
       .action(function (args) {
@@ -44,6 +48,10 @@ export default function (app, tools) {
               this.log(`Hello ${developer_name}.`)
 
               setDeveloper(developer_name)
+
+              this.log('Initializing nio context for developer', developer_name)
+
+              init()
 
               resolve()
 

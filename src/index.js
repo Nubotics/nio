@@ -13,38 +13,43 @@ module.exports = async function nio() {
   let app = Vorpal()
 
   app.localStorage('nio')
-  let hangar = {}
-  try {
-    hangar = await core.init(app, tools)
-  } catch (e) {
-    console.log('error initializing hangar', e)
-  }
-  app.hangar = hangar || {}
+
+  app.init = core.init
   app.bots = core.bots
+  app.shelter = core.shelter
+
+
+  let ctx = {}
+  try {
+    ctx = await app.init(app, tools)
+  } catch (e) {
+    console.log('error initializing nio context', e)
+  }
+
+  app.ctx = ctx || {}
 
   const ext = Ext(app, tools)
 
   app
     .use(ext)
 
-  if (has(app.hangar,'productCollection')){
-    if (app.hangar.productCollection.length > 0){
-      for(let product of app.hangar.productCollection){
-        if (has(product,'Commands')){
-          if (is(product.Commands,'function')){
-            let commands = product.Commands(app,tools)
+  if (!is(app.ctx.productCollection, 'zero-len')) {
 
+      for (let product of app.ctx.productCollection) {
+        if (has(product, 'Commands')) {
+          if (is(product.Commands, 'function')) {
+            let commands = product.Commands(app, tools)
             app.use(commands)
           }
         }
 
       }
-    }
+
   }
 
   return app
     .delimiter('nio$')
-    .log(`${app.hangar.developer == '' ? 'Welcome developer, please say hello' : `Welcome back ${app.hangar.developer}`}`)
+    .log(`${app.ctx.developer === '' ? 'Welcome developer, please say hello' : `Welcome back ${app.ctx.developer}`}`)
     .show()
 }
 
