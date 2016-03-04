@@ -236,8 +236,8 @@ let core = {
     },
   },
   shelter: {
-    spawnVagrant(binary, args){
-      let vagrant = spawn(binary, args)
+    spawnVagrant(binary, args, options){
+      let vagrant = spawn(binary, args, options)
       log.verbose('vagrant', 'vagrant ' + args.join(' '))
       let stdout = ''
       let stderr = ''
@@ -257,7 +257,7 @@ let core = {
       })
       return vagrant
     },
-    up(options, machine){
+    up(options, machine, cwd){
       let provision = options.provision || false
       let provider = options.provider || 'virtualbox'
       let binary = options.binary || 'vagrant'
@@ -266,7 +266,7 @@ let core = {
           'up', machine,
           provider ? '--provider=' + provider : '',
           !provision ? '--no-provision' : '--provision=' + provision
-        ])
+        ],{cwd})
         let booted = null
         vagrant.stdout.on('data', function (data) {
           data += ''
@@ -287,10 +287,10 @@ let core = {
       })
 
     },
-    halt(options){
+    halt(options, cwd){
       let binary = options.binary || 'vagrant'
       return new Promise(function (resolve, reject) {
-        let vagrant = core.shelter.spawnVagrant(binary, ['halt'])
+        let vagrant = core.shelter.spawnVagrant(binary, ['halt'],{cwd})
         vagrant.on('done', function (code, stdout, stderr) {
           if (stderr) {
             reject(stderr)
@@ -300,12 +300,12 @@ let core = {
         })
       })
     },
-    status(options){
+    status(options, cwd){
       let machines = {}
       let reg = /([a-z0-9-_]+)\s+(running|poweroff|aborted|not created)\s+[(](virtualbox|libvirt)[)]/i
       let binary = options.binary || 'vagrant'
       return new Promise(function (resolve, reject) {
-        let vagrant = core.shelter.spawnVagrant(binary, ['status'])
+        let vagrant = core.shelter.spawnVagrant(binary, ['status'],{cwd})
         vagrant.stdout.on('data', function (data) {
           data += ''
           data.split('\n').forEach(function (line) {
@@ -329,12 +329,12 @@ let core = {
       })
 
     },
-    async isRunning(options){
-      let machines = await core.shelter.status(options)
+    async isRunning(options, cwd){
+      let machines = await core.shelter.status(options, cwd)
       let running = false
       Object.keys(machines).forEach(function (name) {
         if (machines[name].status == 'running') {
-          running = name
+          running = true
         }
       })
       return running
