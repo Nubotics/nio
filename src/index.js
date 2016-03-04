@@ -17,7 +17,7 @@ module.exports = async function nio() {
   app.init = core.init
   app.bots = core.bots
   app.shelter = core.shelter
-  
+
   let ctx = {}
   try {
     ctx = await app.init(app, tools)
