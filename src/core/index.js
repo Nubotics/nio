@@ -102,8 +102,6 @@ let core = {
 
     let productRawPath = mode === 'hangar' ? `/${convention.products ? 'products' : convention.products}` : '/'
 
-    if (mode === 'product') productRawPath = nioHomePath
-
     productPath = setPath('PRODUCT_PATH', productRawPath)
 
     let shelterRawPath = mode === 'hangar' ? `/${convention.shelter ? 'shelter' : convention.shelter}` : ''
