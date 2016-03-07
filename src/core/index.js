@@ -53,7 +53,7 @@ let core = {
     env.set('NIO_FILE_PATH', nioFile)
     app.log('NIO_FILE_PATH -> ', nioFile)
 
-    if (!nioFile) {
+    if (!nioFile && mode === 'hangar') {
       //TODO: set an out of environment mode and prompt user to scaffold hangar / product
       throw 'Derp! No hangar.js or product.js file found.'
     }
