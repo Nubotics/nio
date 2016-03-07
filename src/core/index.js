@@ -43,7 +43,7 @@ let core = {
       if (!is(nioFile, 'nothing') && !is(nioFile, 'zero-len')) {
         mode = 'product'
       }
-    } else if (includes(nioFile, 'product') && mode === 'hangar') {
+    } else if (includes(nioFile, 'product.js') && mode === 'hangar') {
       nioHomePath = np.resolve(np.join(nioHomePath, '../../'))
     }
 
@@ -76,7 +76,7 @@ let core = {
 
     setPath('BOT_PATH', `/${convention.bots ? 'bots' : convention.bots}`)
 
-    let productRawPath = mode === 'hangar' && includes(nioFile, 'hangar') ? `/${convention.products ? 'products' : convention.products}` : ''
+    let productRawPath = mode === 'hangar' && includes(nioFile, 'hangar.js') ? `/${convention.products ? 'products' : convention.products}` : ''
 
     productPath = setPath('PRODUCT_PATH', productRawPath)
 
