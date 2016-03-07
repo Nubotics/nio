@@ -76,7 +76,7 @@ let core = {
 
     setPath('BOT_PATH', `/${convention.bots ? 'bots' : convention.bots}`)
 
-    let productRawPath = mode === 'hangar' ? `/${convention.products ? 'products' : convention.products}` : '/'
+    let productRawPath = mode === 'hangar' ? `/${convention.products ? 'products' : convention.products}` : ''
 
     productPath = setPath('PRODUCT_PATH', productRawPath)
 
