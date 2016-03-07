@@ -38,14 +38,14 @@ let core = {
     //:-> detect mode -> hangar / product
     let nioFile = lookup('*hangar.js', {cwd: nioHomePath})
 
-    if (is(nioFile, 'nothing') || is(nioFile, 'zero-len') || includes(nioHomePath, '/products')) {
-      nioFile = lookup('*product.js', {cwd: nioHomePath})
+    if (is(nioFile, 'nothing') || is(nioFile, 'zero-len')) {
+      //nioFile = lookup('*product.js', {cwd: nioHomePath})
       if (!is(nioFile, 'nothing') && !is(nioFile, 'zero-len')) {
         mode = 'product'
       }
     }
 
-    if (includes(nioFile, 'product.js') && mode === 'hangar') {
+    if (mode === 'hangar' && includes(nioHomePath, '/products')) {
       nioHomePath = np.resolve(np.join(nioHomePath, '../../'))
       mode = 'product'
     }
@@ -76,7 +76,16 @@ let core = {
 
     hangarPath = setPath('HANGAR_PATH', '/')
 
-    let config = require(nioFile)
+    let config = {convention: {
+      bots: 'bots',
+      cargo: 'cargo',
+      products: 'products',
+      shelter: 'shelter'
+    }}
+
+    if (mode === 'hangar'){
+      config = require(nioFile)
+    }
 
     let { convention } = config
 
