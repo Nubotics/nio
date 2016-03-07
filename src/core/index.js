@@ -74,7 +74,7 @@ let core = {
     env.set('NIO_MODE', mode)
     app.log('NIO_MODE -> ', mode)
 
-    hangarPath = mode === 'hangar' ? setPath('HANGAR_PATH', '/') : setPath('HANGAR_PATH', '')
+    hangarPath = setPath('HANGAR_PATH', '/')
 
     let config = require(nioFile)
 
