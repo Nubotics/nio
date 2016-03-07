@@ -38,7 +38,7 @@ let core = {
     //:-> detect mode -> hangar / product
     let nioFile = lookup('*hangar.js', {cwd: nioHomePath})
 
-    if (is(nioFile, 'nothing') || is(nioFile, 'zero-len') || includes(nioHomePath,'/products')) {
+    if (is(nioFile, 'nothing') || is(nioFile, 'zero-len') || includes(nioHomePath, '/products')) {
       nioFile = lookup('*product.js', {cwd: nioHomePath})
       if (!is(nioFile, 'nothing') && !is(nioFile, 'zero-len')) {
         mode = 'product'
@@ -79,6 +79,19 @@ let core = {
     let config = require(nioFile)
 
     let { convention } = config
+
+    if (is(convention, 'nothing')) {
+      convention = {
+        name: 'nubotics',
+        convention: {
+          bots: 'bots',
+          cargo: 'cargo',
+          products: 'products',
+          shelter: 'shelter'
+        },
+        plugins: [],
+      }
+    }
 
     setPath('BOT_PATH', `/${convention.bots ? 'bots' : convention.bots}`)
 
