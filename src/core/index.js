@@ -100,7 +100,7 @@ let core = {
 
     setPath('BOT_PATH', `/${convention.bots ? 'bots' : convention.bots}`)
 
-    let productRawPath = mode === 'hangar' && includes(nioFile, 'hangar.js') ? `/${convention.products ? 'products' : convention.products}` : ''
+    let productRawPath = mode === 'hangar' ? `/${convention.products ? 'products' : convention.products}` : '/'
 
     if (mode === 'product') productRawPath = nioHomePath
 
@@ -146,6 +146,20 @@ let core = {
             ...currentProduct,
           })
         }
+      }
+    }else{
+      let currentProductPath = createPath(productPath)
+      let currentProduct = await tools.load(`${currentProductPath}/product.js`) || {}
+
+      if (has(currentProduct, 'default')) {
+        currentProduct = currentProduct.default
+      }
+
+      if (has(currentProduct, 'name')) {
+        productCollection.push({
+          path: currentProductPath,
+          ...currentProduct,
+        })
       }
     }
     //-> collect boxes in shelter
