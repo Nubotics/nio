@@ -26,8 +26,11 @@ let core = {
       return np.resolve(np.join(...paths))
     }
 
+    //:-> run path
+    let processPath = process.cwd()
+
     //:-> nio home path
-    let nioHomePath = process.cwd()
+    let nioHomePath = processPath
 
     //:-> nio mode
     let mode = 'hangar'
@@ -98,6 +101,10 @@ let core = {
 
       for (let productFolder of productFolders) {
         let currentProductPath = createPath(productPath, productFolder)
+
+        if (np.resolve(processPath) === productPath){
+          currentProductPath = processPath
+        }
 
         let currentProduct = await tools.load(`${currentProductPath}/product.js`) || {}
 
