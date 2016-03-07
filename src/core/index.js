@@ -43,8 +43,8 @@ let core = {
       if (!is(nioFile, 'nothing') && !is(nioFile, 'zero-len')) {
         mode = 'product'
       }
-    }else if (includes(nioFile, 'product')){
-      nioHomePath = np.resolve(np.join(nioHomePath,'../../'))
+    } else if (includes(nioFile, 'product') && mode === 'hangar') {
+      nioHomePath = np.resolve(np.join(nioHomePath, '../../'))
     }
 
     if (!nioFile) {
@@ -102,7 +102,7 @@ let core = {
       for (let productFolder of productFolders) {
         let currentProductPath = createPath(productPath, productFolder)
 
-        if (np.resolve(processPath) === productPath){
+        if (np.resolve(processPath) === productPath) {
           currentProductPath = processPath
         }
 
@@ -125,13 +125,13 @@ let core = {
     return {
       developer,
       mode,
-      paths:{
-        home:env.get('NIO_HOME'),
-        hangar:env.get('HANGAR_PATH'),
-        products:env.get('PRODUCT_PATH'),
-        bots:env.get('BOT_PATH'),
-        shelter:env.get('SHELTER_PATH'),
-        cargo:env.get('CARGO_PATH'),
+      paths: {
+        home: env.get('NIO_HOME'),
+        hangar: env.get('HANGAR_PATH'),
+        products: env.get('PRODUCT_PATH'),
+        bots: env.get('BOT_PATH'),
+        shelter: env.get('SHELTER_PATH'),
+        cargo: env.get('CARGO_PATH'),
       },
       productCollection,
     }
