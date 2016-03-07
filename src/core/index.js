@@ -45,6 +45,7 @@ let core = {
       }
     } else if (includes(nioFile, 'product.js') && mode === 'hangar') {
       nioHomePath = np.resolve(np.join(nioHomePath, '../../'))
+      mode = 'product'
     }
 
     if (!nioFile) {
