@@ -82,14 +82,10 @@ let core = {
 
     if (is(convention, 'nothing')) {
       convention = {
-        name: 'nubotics',
-        convention: {
-          bots: 'bots',
-          cargo: 'cargo',
-          products: 'products',
-          shelter: 'shelter'
-        },
-        plugins: [],
+        bots: 'bots',
+        cargo: 'cargo',
+        products: 'products',
+        shelter: 'shelter'
       }
     }
 
