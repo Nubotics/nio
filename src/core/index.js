@@ -39,10 +39,7 @@ let core = {
     let nioFile = lookup('*hangar.js', {cwd: nioHomePath})
 
     if (is(nioFile, 'nothing') || is(nioFile, 'zero-len')) {
-      //nioFile = lookup('*product.js', {cwd: nioHomePath})
-      if (!is(nioFile, 'nothing') && !is(nioFile, 'zero-len')) {
         mode = 'product'
-      }
     }
 
     if (mode === 'hangar' && includes(nioHomePath, '/products')) {
@@ -55,7 +52,7 @@ let core = {
 
     if (!nioFile && mode === 'hangar') {
       //TODO: set an out of environment mode and prompt user to scaffold hangar / product
-      throw 'Derp! No hangar.js or product.js file found.'
+      throw 'Derp! No hangar.js file found.'
     }
 
     const setPath = function (key, path) {
