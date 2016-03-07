@@ -4,7 +4,7 @@
   "description": "Your own personal development assistant in a CLI",
   "main": "index.js",
   "bin": {
-    "nio": "nio.js"
+    "nio": "bin/nio.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
