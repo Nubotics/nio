@@ -39,6 +39,12 @@ module.exports = async function nio() {
           if (is(product.Commands, 'function')) {
             let commands = product.Commands(app, tools)
             app.use(commands)
+
+          }
+          if (has(product, 'onInit')){
+            if (is(product.onInit,'function')){
+              product.onInit.call(app)
+            }
           }
         }
 

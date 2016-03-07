@@ -63,7 +63,7 @@ let core = {
     env.set('NIO_MODE', mode)
     app.log('NIO_MODE -> ', mode)
 
-    hangarPath = setPath('HANGAR_PATH', '')
+    hangarPath = mode === 'hangar' ? setPath('HANGAR_PATH', '/') : setPath('HANGAR_PATH', '')
 
     let config = require(nioFile)
 
@@ -115,6 +115,15 @@ let core = {
 
     return {
       developer,
+      mode,
+      paths:{
+        home:env.get('NIO_HOME'),
+        hangar:env.get('HANGAR_PATH'),
+        products:env.get('PRODUCT_PATH'),
+        bots:env.get('BOT_PATH'),
+        shelter:env.get('SHELTER_PATH'),
+        cargo:env.get('CARGO_PATH'),
+      },
       productCollection,
     }
 
@@ -237,6 +246,9 @@ let core = {
   },
   shelter: {
     spawnVagrant(binary, args, options){
+
+      //log.info('Vagrant spawn -> args, options', args, options)
+
       let vagrant = spawn(binary, args, options)
       log.verbose('vagrant', 'vagrant ' + args.join(' '))
       let stdout = ''
@@ -266,7 +278,7 @@ let core = {
           'up', machine,
           provider ? '--provider=' + provider : '',
           !provision ? '--no-provision' : '--provision=' + provision
-        ],{cwd})
+        ], {cwd})
         let booted = null
         vagrant.stdout.on('data', function (data) {
           data += ''
@@ -290,7 +302,7 @@ let core = {
     halt(options, cwd){
       let binary = options.binary || 'vagrant'
       return new Promise(function (resolve, reject) {
-        let vagrant = core.shelter.spawnVagrant(binary, ['halt'],{cwd})
+        let vagrant = core.shelter.spawnVagrant(binary, ['halt'], {cwd})
         vagrant.on('done', function (code, stdout, stderr) {
           if (stderr) {
             reject(stderr)
@@ -305,7 +317,7 @@ let core = {
       let reg = /([a-z0-9-_]+)\s+(running|poweroff|aborted|not created)\s+[(](virtualbox|libvirt)[)]/i
       let binary = options.binary || 'vagrant'
       return new Promise(function (resolve, reject) {
-        let vagrant = core.shelter.spawnVagrant(binary, ['status'],{cwd})
+        let vagrant = core.shelter.spawnVagrant(binary, ['status'], {cwd})
         vagrant.stdout.on('data', function (data) {
           data += ''
           data.split('\n').forEach(function (line) {

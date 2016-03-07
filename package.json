@@ -1,6 +1,6 @@
 {
   "name": "nio",
-  "version": "0.6.1",
+  "version": "0.6.5",
   "description": "Your own personal development assistant in a CLI",
   "main": "index.js",
   "bin": {

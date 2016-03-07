@@ -9,15 +9,15 @@ export default function (app, tools) {
     let { has } = lodash
     let { inquirer } = ui
 
-    let setDeveloper = (developer)=>{
+    let setDeveloper = (developer)=> {
       app.localStorage.setItem('developer', developer)
     }
 
-    let getDeveloper = ()=>{
+    let getDeveloper = ()=> {
       return app.localStorage.getItem('developer') || 'nobody'
     }
 
-    let init = async function(){
+    let init = async function () {
       await app.init()
     }
 
@@ -76,17 +76,24 @@ export default function (app, tools) {
         let currentName = getDeveloper()
         this.log(`Good bye ${currentName}.`)
         setDeveloper('')
-        ctx.exec('exit',cb)
+        ctx.exec('exit', cb)
 
       })
 
     ctx
-      .command('bots list', 'lists currently running hangar bots')
-      .action(async function(args, cb){
-        let list = await app.bots.list()
-        this.log('bots -> list', list)
+      .command('ctx', 'logs the nio context')
+      .action(function (args, cb) {
+        this.log('nio context ->', app.ctx)
         cb()
       })
+
+    /* ctx
+     .command('bots list', 'lists currently running hangar bots')
+     .action(async function(args, cb){
+     let list = await app.bots.list()
+     this.log('bots -> list', list)
+     cb()
+     })*/
 
     /*  ctx
      .command('ext explore [folder]', 'launch file explorer')
