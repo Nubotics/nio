@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 require('babel-register');
 require('babel-polyfill');
-var nio = require('../src/index');
+var nio = require('../lib/index');
 try {
   nio();
 } catch (e) {
