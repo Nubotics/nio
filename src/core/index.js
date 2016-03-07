@@ -78,6 +78,8 @@ let core = {
 
     let productRawPath = mode === 'hangar' && includes(nioFile, 'hangar.js') ? `/${convention.products ? 'products' : convention.products}` : ''
 
+    if (mode === 'product') productRawPath = nioHomePath
+
     productPath = setPath('PRODUCT_PATH', productRawPath)
 
     let shelterRawPath = mode === 'hangar' ? `/${convention.shelter ? 'shelter' : convention.shelter}` : ''
@@ -97,6 +99,8 @@ let core = {
 
     let productCollection = []
     if (mode === 'hangar') {
+
+
       productFolders = tools.getFolders(createPath(productPath))
 
       for (let productFolder of productFolders) {
