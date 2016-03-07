@@ -101,11 +101,14 @@ let core = {
     setPath('BOT_PATH', `/${convention.bots ? 'bots' : convention.bots}`)
 
     let productRawPath = mode === 'hangar' ? `/${convention.products ? 'products' : convention.products}` : '/'
-
-    productPath = setPath('PRODUCT_PATH', productRawPath)
+    if (mode === 'product'){
+      productRawPath = processPath
+    }
+    productPath = productRawPath != processPath ? createPath(nioHomePath, productRawPath) : productRawPath
+    env.set('PRODUCT_PATH', productPath)
+    app.log(`env set -> PRODUCT_PATH ->`, productPath)
 
     let shelterRawPath = mode === 'hangar' ? `/${convention.shelter ? 'shelter' : convention.shelter}` : ''
-
     setPath('SHELTER_PATH', shelterRawPath)
 
     setPath('CARGO_PATH', `/${convention.cargo ? 'cargo' : convention.cargo}`)
