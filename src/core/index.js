@@ -38,15 +38,20 @@ let core = {
     //:-> detect mode -> hangar / product
     let nioFile = lookup('*hangar.js', {cwd: nioHomePath})
 
-    if (is(nioFile, 'nothing') || is(nioFile, 'zero-len')) {
+    if (is(nioFile, 'nothing') || is(nioFile, 'zero-len') || includes(nioHomePath,'/products')) {
       nioFile = lookup('*product.js', {cwd: nioHomePath})
       if (!is(nioFile, 'nothing') && !is(nioFile, 'zero-len')) {
         mode = 'product'
       }
-    } else if (includes(nioFile, 'product.js') && mode === 'hangar') {
+    }
+
+    if (includes(nioFile, 'product.js') && mode === 'hangar') {
       nioHomePath = np.resolve(np.join(nioHomePath, '../../'))
       mode = 'product'
     }
+
+    env.set('NIO_FILE_PATH', nioFile)
+    app.log('NIO_FILE_PATH -> ', nioFile)
 
     if (!nioFile) {
       //TODO: set an out of environment mode and prompt user to scaffold hangar / product
