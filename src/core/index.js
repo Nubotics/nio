@@ -12,7 +12,7 @@ let core = {
 
     //TODO: on nio init find path of hanger by hangar config file, not process
     let { np, env } = tools
-    let { has, is } = _
+    let { has, is, includes } = _
     let {
       hangarPath,
       botPath,
@@ -40,6 +40,8 @@ let core = {
       if (!is(nioFile, 'nothing') && !is(nioFile, 'zero-len')) {
         mode = 'product'
       }
+    }else if (includes(nioFile, 'product')){
+      nioHomePath = np.resolve(np.join(nioHomePath,'../../'))
     }
 
     if (!nioFile) {
@@ -71,7 +73,7 @@ let core = {
 
     setPath('BOT_PATH', `/${convention.bots ? 'bots' : convention.bots}`)
 
-    let productRawPath = mode === 'hangar' ? `/${convention.products ? 'products' : convention.products}` : nioHomePath
+    let productRawPath = mode === 'hangar' ? `/${convention.products ? 'products' : convention.products}` : '/'
 
     productPath = setPath('PRODUCT_PATH', productRawPath)
 
