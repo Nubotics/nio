@@ -17,6 +17,7 @@ module.exports = async function nio() {
   app.init = core.init
   app.bots = core.bots
   app.shelter = core.shelter
+  app.products = core.products
 
   let ctx = {}
   try {
@@ -31,7 +32,7 @@ module.exports = async function nio() {
 
   app
     .use(ext)
-
+  try {
   if (!is(app.ctx.productCollection, 'zero-len')) {
 
       for (let product of app.ctx.productCollection) {
@@ -51,10 +52,13 @@ module.exports = async function nio() {
       }
 
   }
+  } catch (e) {
+    console.log('error loading product extensions', e)
+  }
 
   return app
     .delimiter('nio$')
-    .log(`${app.ctx.developer === '' ? 'Welcome developer, please say hello' : `Welcome back ${app.ctx.developer}`}`)
+    .log(`${app.ctx.developer === '' ? 'Welcome developer, please say hello to initialize products' : `Welcome back ${app.ctx.developer}`}`)
     .show()
 }
 

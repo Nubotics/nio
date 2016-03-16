@@ -54,4 +54,5 @@ export default {
   env,
   load,
   getFolders,
+  _,
 }

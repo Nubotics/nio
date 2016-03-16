@@ -4,124 +4,17 @@ import lookup from 'look-up'
 import log from 'npmlog'
 const spawn = require('child_process').spawn
 
-
-let core = {
-  async init(app){
-
-    app.log('loading hangar environment...')
-
-    //TODO: on nio init find path of hanger by hangar config file, not process
-    let { np, env } = tools
-    let { has, is, includes } = _
-    let {
-      hangarPath,
-      botPath,
-      productPath,
-      shelterPath,
-      cargoPath,
-      developer,
-      } = ''
-
-    const createPath = function (...paths) {
-      return np.resolve(np.join(...paths))
-    }
-
-    //:-> run path
-    let processPath = process.cwd()
-
-    //:-> nio home path
-    let nioHomePath = processPath
-
-    //:-> nio mode
-    let mode = 'hangar'
-
-    //:-> detect mode -> hangar / product
-    let nioFile = lookup('*hangar.js', {cwd: nioHomePath})
-
-    if (is(nioFile, 'nothing') || is(nioFile, 'zero-len')) {
-        mode = 'product'
-    }
-
-    if (mode === 'hangar' && includes(nioHomePath, '/products')) {
-      nioHomePath = np.resolve(np.join(nioHomePath, '../../'))
-      mode = 'product'
-    }
-
-    env.set('NIO_FILE_PATH', nioFile)
-    app.log('NIO_FILE_PATH -> ', nioFile)
-
-    if (!nioFile && mode === 'hangar') {
-      //TODO: set an out of environment mode and prompt user to scaffold hangar / product
-      throw 'Derp! No hangar.js file found.'
-    }
-
-    const setPath = function (key, path) {
-      let createdPath = path != '' ? createPath(nioHomePath, path) : ''
-      env.set(key, createdPath)
-      app.log(`env set -> ${key} ->`, createdPath)
-
-      return createdPath
-    }
-
-    //:-> load environment lets
-
-    env.set('NIO_HOME', nioHomePath)
-    app.log('NIO_HOME -> ', nioHomePath)
-
-    env.set('NIO_MODE', mode)
-    app.log('NIO_MODE -> ', mode)
-
-    hangarPath = setPath('HANGAR_PATH', '/')
-
-    let config = {convention: {
-      bots: 'bots',
-      cargo: 'cargo',
-      products: 'products',
-      shelter: 'shelter'
-    }}
-
-    if (mode === 'hangar'){
-      config = require(nioFile)
-    }
-
-    let { convention } = config
-
-    if (is(convention, 'nothing')) {
-      convention = {
-        bots: 'bots',
-        cargo: 'cargo',
-        products: 'products',
-        shelter: 'shelter'
-      }
-    }
-
-    setPath('BOT_PATH', `/${convention.bots ? 'bots' : convention.bots}`)
-
-    let productRawPath = mode === 'hangar' ? `/${convention.products ? 'products' : convention.products}` : '/'
-    if (mode === 'product'){
-      productRawPath = processPath
-    }
-    productPath = productRawPath != processPath ? createPath(nioHomePath, productRawPath) : productRawPath
-    env.set('PRODUCT_PATH', productPath)
-    app.log(`env set -> PRODUCT_PATH ->`, productPath)
-
-    let shelterRawPath = mode === 'hangar' ? `/${convention.shelter ? 'shelter' : convention.shelter}` : ''
-    setPath('SHELTER_PATH', shelterRawPath)
-
-    setPath('CARGO_PATH', `/${convention.cargo ? 'cargo' : convention.cargo}`)
-
-    developer = app.localStorage.getItem('developer')
-    developer = is(developer, 'nothing') ? '' : developer
-    env.set('DEVELOPER', developer)
-    app.log('env set -> DEVELOPER ->', developer)
-
-    //:-> load products
+const createPath = function (...paths) {
+  let { np } = tools
+  return np.resolve(np.join(...paths))
+}
+const products = {
+  async init(mode, processPath, productPath){
+    let { np } = tools
+    let { has } = _
     let productFolders = []
-    app.log('loading hangar products...')
-
     let productCollection = []
     if (mode === 'hangar') {
-
 
       productFolders = tools.getFolders(createPath(productPath))
 
@@ -145,7 +38,8 @@ let core = {
           })
         }
       }
-    }else{
+    } else {
+
       let currentProductPath = createPath(productPath)
       let currentProduct = await tools.load(`${currentProductPath}/product.js`) || {}
 
@@ -160,11 +54,140 @@ let core = {
         })
       }
     }
+    return productCollection
+  },
+}
+
+let core = {
+  async init(app){
+
+
+    app.log('loading hangar environment...')
+
+    //TODO: on nio init find path of hanger by hangar config file, not process
+    let { np, env } = tools
+    let { has, is, includes } = _
+    let {
+      hangarPath,
+      botPath,
+      productPath,
+      shelterPath,
+      cargoPath,
+      developer,
+      } = ''
+    const setEnv = (key, val)=> {
+
+      if (is(env.get(key), 'nothing')) {
+        env.set(key, val)
+      }
+
+    }
+
+    //:-> run path
+    let processPath = process.cwd()
+
+    //:-> nio home path
+    let nioHomePath = processPath
+
+    //:-> nio mode
+    let mode = 'hangar'
+
+    //:-> detect mode -> hangar / product
+    let nioFile = lookup('*hangar.js', {cwd: nioHomePath})
+
+    if (is(nioFile, 'nothing') || is(nioFile, 'zero-len')) {
+      mode = 'product'
+    }
+
+    if (mode === 'hangar' && includes(nioHomePath, '/products')) {
+      nioHomePath = np.resolve(np.join(nioHomePath, '../../'))
+      mode = 'product'
+    }
+
+    setEnv('NIO_FILE_PATH', nioFile)
+    app.log('NIO_FILE_PATH -> ', nioFile)
+
+    if (!nioFile && mode === 'hangar') {
+      //TODO: set an out of environment mode and prompt user to scaffold hangar / product
+      throw 'Derp! No hangar.js file found.'
+    }
+
+    const setPath = function (key, path) {
+      let createdPath = path != '' ? createPath(nioHomePath, path) : ''
+      setEnv(key, createdPath)
+      app.log(`env set -> ${key} ->`, createdPath)
+
+      return createdPath
+    }
+
+    //:-> load environment lets
+
+    setEnv('NIO_HOME', nioHomePath)
+    app.log('NIO_HOME -> ', nioHomePath)
+
+    setEnv('NIO_MODE', mode)
+    app.log('NIO_MODE -> ', mode)
+
+    hangarPath = setPath('HANGAR_PATH', '/')
+
+    let config = {
+      convention: {
+        bots: 'bots',
+        cargo: 'cargo',
+        products: 'products',
+        shelter: 'shelter'
+      }
+    }
+
+    if (mode === 'hangar') {
+      config = require(nioFile)
+    }
+
+    let { convention } = config
+
+    if (is(convention, 'nothing')) {
+      convention = {
+        bots: 'bots',
+        cargo: 'cargo',
+        products: 'products',
+        shelter: 'shelter'
+      }
+    }
+
+    setPath('BOT_PATH', `/${convention.bots ? 'bots' : convention.bots}`)
+
+    let productRawPath = mode === 'hangar' ? `/${convention.products ? 'products' : convention.products}` : '/'
+    if (mode === 'product') {
+      productRawPath = processPath
+    }
+    productPath = productRawPath != processPath ? createPath(nioHomePath, productRawPath) : productRawPath
+    setEnv('PRODUCT_PATH', productPath)
+    app.log(`env set -> PRODUCT_PATH ->`, productPath)
+
+    let shelterRawPath = mode === 'hangar' ? `/${convention.shelter ? 'shelter' : convention.shelter}` : ''
+    setPath('SHELTER_PATH', shelterRawPath)
+
+    setPath('CARGO_PATH', `/${convention.cargo ? 'cargo' : convention.cargo}`)
+
+    developer = app.localStorage.getItem('developer')
+    developer = is(developer, 'nothing') ? '' : developer
+    setEnv('DEVELOPER', developer)
+    app.log('env set -> DEVELOPER ->', developer)
+
+    //:-> load products
+
+    let productCollection = []
+
+    if (developer != '') {
+      productCollection = await products.init(mode, processPath, productPath)
+    }
+
     //-> collect boxes in shelter
 
     return {
       developer,
       mode,
+      processPath,
       paths: {
         home: env.get('NIO_HOME'),
         hangar: env.get('HANGAR_PATH'),
@@ -177,6 +200,7 @@ let core = {
     }
 
   },
+  products,
   bots: {
     start(config){
       let { pm2 } = tools

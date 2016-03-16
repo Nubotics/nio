@@ -6,7 +6,7 @@ export default function (app, tools) {
     ctx.api = ctx.api || {}
 
     let { chalk, lodash, ui } = ctx
-    let { has } = lodash
+    let { has, is } = tools._
     let { inquirer } = ui
 
     let setDeveloper = (developer)=> {
@@ -18,55 +18,112 @@ export default function (app, tools) {
     }
 
     let init = async function () {
-      await app.init()
+    return  await app.init(app, tools)
     }
 
     ctx
       .command('hello [name]', 'greets nio and sets current developer')
-      .action(function (args) {
+      .action(async function (args, cb) {
 
-        return new Promise((resolve, reject)=> {
 
-          if (has(args, 'name')) {
+        if (has(args, 'name')) {
 
-            let { name } = args
-            this.log(`Hello ${name}.`)
-            setDeveloper(name)
-            resolve()
+          let { name } = args
+          this.log(`Hello ${name}.`)
+          setDeveloper(name)
 
-          } else {
+          this.log('Initializing nio context for developer', name)
 
-            this.log('Hello. I am nio, your personal development assistant\n')
+          try {
+            app.ctx = await init()
+          } catch (e) {
+            this.log('error initializing nio context', e)
+          }
+          try {
+            if (!is(app.ctx.productCollection, 'zero-len')) {
 
-            this.prompt({
-              type: "input",
-              name: "developer_name",
-              message: "what is your name developer? "
-            }, (answer)=> {
-              let { developer_name } = answer
+              for (let product of app.ctx.productCollection) {
+                if (has(product, 'Commands')) {
+                  if (is(product.Commands, 'function')) {
+                    let commands = product.Commands(app, tools)
+                    app.use(commands)
 
-              this.log(`Hello ${developer_name}.`)
+                  }
+                  if (has(product, 'onInit')){
+                    if (is(product.onInit,'function')){
+                      product.onInit.call(app)
+                    }
+                  }
+                }
 
-              setDeveloper(developer_name)
+              }
 
-              this.log('Initializing nio context for developer', developer_name)
-
-              init()
-
-              resolve()
-
-            })
+            }
+          } catch (e) {
+            console.log('error loading product extensions', e)
           }
 
-        })
+          cb()
+
+
+        } else {
+
+
+          this.log('Hello. I am nio, your personal development assistant\n')
+
+          this.prompt({
+            type: "input",
+            name: "developer_name",
+            message: "what is your name developer? "
+          }, async (answer)=> {
+            let { developer_name } = answer
+
+            this.log(`Hello ${developer_name}.`)
+
+            setDeveloper(developer_name)
+
+            this.log('Initializing nio context for developer', developer_name)
+            try {
+            app.ctx = await init()
+            } catch (e) {
+              this.log('error initializing nio context', e)
+            }
+            try {
+              if (!is(app.ctx.productCollection, 'zero-len')) {
+
+                for (let product of app.ctx.productCollection) {
+                  if (has(product, 'Commands')) {
+                    if (is(product.Commands, 'function')) {
+                      let commands = product.Commands(app, tools)
+                      app.use(commands)
+
+                    }
+                    if (has(product, 'onInit')){
+                      if (is(product.onInit,'function')){
+                        product.onInit.call(app)
+                      }
+                    }
+                  }
+
+                }
+
+              }
+            } catch (e) {
+              console.log('error loading product extensions', e)
+            }
+            cb()
+
+          })
+        }
 
       })
+
 
     ctx
       .command('who', 'who is the current developer')
       .action(function (args, cb) {
         let currentName = getDeveloper()
-        this.log(`${currentName} is the current developer`)
+        ctx.log(`${currentName} is the current developer`)
         cb()
       })
 
@@ -74,7 +131,7 @@ export default function (app, tools) {
       .command('bye', 'bids farewell to nio and unsets the current developer')
       .action(function (args, cb) {
         let currentName = getDeveloper()
-        this.log(`Good bye ${currentName}.`)
+        ctx.log(`Good bye ${currentName}.`)
         setDeveloper('')
         ctx.exec('exit', cb)
 
@@ -83,7 +140,7 @@ export default function (app, tools) {
     ctx
       .command('ctx', 'logs the nio context')
       .action(function (args, cb) {
-        this.log('nio context ->', app.ctx)
+        ctx.log('nio context ->', app.ctx)
         cb()
       })
 
