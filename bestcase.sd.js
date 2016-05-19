@@ -1,6 +1,12 @@
-
+//::-> HANGAR
 const hangar = {
-  name:'nubotics',
+  name: 'nubotics',
+  bitBucket: {
+    token: '',
+  },
+  gitHub: {
+    token: '',
+  },
   start(){
 
   },
@@ -12,45 +18,59 @@ const hangar = {
   },
 }
 
+//::-> CARGO
 const digitalOcean = {
-  name:'nubotics',
-  domain:'',
-  transport:{},
-  username:'',
-  password:'',
+  name: 'nubotics',
+  domain: '',
+  transport: {},
+  username: '',
+  password: '',
 }
 
+//::-> PRODUCTS
+
+//-> bots
 const hotServer = {
-  name:'hot-server',
-  propTypes:{},
-  defaultProps:{},
-  start(ctx, props){},
-  stop(ctx){},
-  die(ctx){},
+  name: 'hot-server',
+  propTypes: {},
+  defaultProps: {},
+  start(ctx, props){
+  },
+  stop(ctx){
+  },
+  die(ctx){
+  },
 }
 
 const hotWeb = {
-  name:'hot-server',
-  propTypes:{},
-  defaultProps:{},
-  start(ctx, props){},
-  stop(ctx){},
-  die(ctx){},
+  name: 'hot-server',
+  propTypes: {},
+  defaultProps: {},
+  start(ctx, props){
+  },
+  stop(ctx){
+  },
+  die(ctx){
+  },
 }
 
 const cargo = {
-  name:'hot-server',
-  propTypes:{},
-  defaultProps:{},
-  start(ctx, props){},
-  stop(ctx){},
-  die(ctx){},
+  name: 'hot-server',
+  propTypes: {},
+  defaultProps: {},
+  start(ctx, props){
+  },
+  stop(ctx){
+  },
+  die(ctx){
+  },
 }
 
 const cloudStarter = {
-  name:'cloud-starter',
-  config:{},
-  bots:[
+  name: 'cloud-starter',
+  repo: '',
+  config: {},
+  bots: [
     hotServer,
     hotWeb,
     cargo,
@@ -61,60 +81,72 @@ const cloudStarter = {
   stop(ctx){
 
   },
-  cargo(ctx){},
-  ship(ctx){},
+  cargo(ctx){
+  },
+  ship(ctx){
+  },
   die(err, ctx){
 
   },
 }
 
+//::-> SHELTER
 const scotchBox = {
-  name:'',
-  hostPath:'',
-  guestPath:'',
-  repository:'',
-  provider:'',
+  name: '',
+  hostPath: '',
+  guestPath: '',
+  repository: '',
+  provider: '',
 }
 
+//::-> MODULES
 const nio = {
-  name:'',
-  repository:'',
-  prePublish(ctx){},
-  postPublish(ctx){},
+  name: '',
+  repository: '',
+  prePublish(ctx){
+  },
+  postPublish(ctx){
+  },
 }
 
 const nioCore = {
-  name:'',
-  repository:'',
-  prePublish(ctx){},
-  postPublish(ctx){},
+  name: '',
+  repository: '',
+  prePublish(ctx){
+  },
+  postPublish(ctx){
+  },
 }
 
 const nioTools = {
-  name:'',
-  repository:'',
-  prePublish(ctx){},
-  postPublish(ctx){},
+  name: '',
+  repository: '',
+  prePublish(ctx){
+  },
+  postPublish(ctx){
+  },
 }
 
+
+//::-> NIO CONTEXT
 export default {
   ...hangar,
-  bots:[],
-  cargo:[
+  bots: [],
+  cargo: [
     digitalOcean,
   ],
-  products:[
+  products: [
     cloudStarter,
   ],
-  shelter:[
+  shelter: [
     scotchBox,
   ],
-  modules:{
-    server:[
+  modules: {
+    server: [
       nio,
       nioCore,
     ],
-    universal:[
+    universal: [
       nioTools,
     ],
   }

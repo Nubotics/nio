@@ -15,7 +15,7 @@ Think of Nio as your own set of Dr Octopus's crazy arms coupled with an army of 
 Nio introduces some concepts to the product development space to make automation as predictable as possible.
 These concepts translate into physical folders, files and running processes.
 
-### hangar
+### Hangar
 
 The hangar is the root project folder for cloud based products. Similar to the physical structure of its namesake, the hangar houses all the materials, tools, cargo and personnel to construct and maintain products and ship them as cargo to the cloud.
 
@@ -37,7 +37,7 @@ TODO
 
 TODO
 
-### homeland
+### Homeland
 
 TODO
 
@@ -49,19 +49,21 @@ TODO
 
 TODO
 
-## Products
+## Concepts implemented
+
+### Products
 
 TODO
 
-## Bots
+### Bots
 
 TODO
 
-## Cargo
+### Cargo
 
 TODO
 
-## Shelter
+### Shelter
 
 TODO
 
